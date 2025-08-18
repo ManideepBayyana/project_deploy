@@ -1,0 +1,94 @@
+.menu-section {
+    padding: 30px 20px;
+    max-width: 1200px;
+    margin: auto;
+}
+.menu-section h2 {
+    color: #ff7b00;
+    font-size: 2em;
+    text-align: left;
+    margin-bottom: 20px;
+    border-left: 6px solid #ff7b00;
+    padding-left: 10px;
+}
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+/* Menu Card */
+.menu-card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    padding: 10px;
+}
+.menu-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-bottom: 1px solid #eee;
+    border-radius: 10px 10px 0 0;
+    transition: transform 0.3s ease;
+}
+.menu-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+.menu-card:hover img {
+    transform: scale(1.05);
+}
+.menu-card h3 {
+    font-size: 1.3em;
+    margin: 12px 0 6px;
+}
+.menu-card p {
+    font-size: 0.95em;
+    padding: 0 10px;
+    color: #666;
+}
+.icons img {
+    width: 18px;
+    height: 18px;
+    margin: 0 3px 0 5px;
+    vertical-align: middle;
+    border-radius: 3px; /* for rounded edges */
+}
+.price {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #ff7b00;
+    margin: 10px 0;
+}
+.menu-card button {
+    background: #ff7b00;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    font-size: 1em;
+    border-radius: 0 0 12px 12px;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-top: 10px;
+}
+.menu-card button:hover,
+.hero-cta:hover {
+    background: #e66a00;
+}
+
+/* Responsive tweaks */
+@media (max-width: 700px) {
+    .menu-section {
+        padding: 20px 5px;
+    }
+    .menu-card img {
+        height: 140px;
+    }
+    .menu-card h3 { font-size: 1.1em; }
+}

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug - Tindi Bandi</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .debug-section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .debug-section h3 { color: #ff7b00; margin-top: 0; }
+        button { background: #ff7b00; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; margin: 5px; }
+        .output { background: #f5f5f5; padding: 10px; border-radius: 4px; margin: 10px 0; white-space: pre-wrap; }
+        .success { color: #2e7d32; }
+        .error { color: #d32f2f; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Tindi Bandi Debug Panel</h1>
+    
+    <div class="debug-section">
+        <h3>1. Database Connection Test</h3>
+        <button onclick="testDatabase()">Test Database Connection</button>
+        <div id="db-output" class="output"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h3>2. Admin API Test</h3>
+        <button onclick="testAdminLogin()">Test Admin Login</button>
+        <button onclick="testAdminMenu()">Test Menu API</button>
+        <button onclick="addSampleItem()">Add Sample Item</button>
+        <div id="admin-output" class="output"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h3>3. Profile System Test</h3>
+        <button onclick="setupTestProfile()">Setup Test Profile</button>
+        <button onclick="fixCurrentProfile()">Fix Current Profile</button>
+        <button onclick="checkProfileState()">Check Profile State</button>
+        <button onclick="clearProfileData()">Clear Profile Data</button>
+        <div id="profile-output" class="output"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h3>4. Image Test</h3>
+        <button onclick="testImages()">Test Image Loading</button>
+        <div id="image-output" class="output"></div>
+        <div id="image-preview"></div>
+    </div>
+
+    <script>
+        // Database test
+        async function testDatabase() {
+            const output = document.getElementById('db-output');
+            output.textContent = 'Testing database connection...';
+            
+            try {
+                const response = await fetch('/api/menu');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    output.innerHTML = `<span class="success">✅ Database connected successfully!</span>\nFound ${data.length} menu items:\n${JSON.stringify(data, null, 2)}`;
+                } else {
+                    output.innerHTML = `<span class="error">❌ Database error:</span>\n${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                output.innerHTML = `<span class="error">❌ Network error:</span>\n${error.message}`;
+            }
+        }
+        
+        // Admin login test
+        async function testAdminLogin() {
+            const output = document.getElementById('admin-output');
+            output.textContent = 'Testing admin login...';
+            
+            try {
+                const response = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: 'admin123' })
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('adminToken', data.token);
+                    output.innerHTML = `<span class="success">✅ Admin login successful!</span>\nToken: ${data.token}`;
+                } else {
+                    output.innerHTML = `<span class="error">❌ Admin login failed:</span>\n${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                output.innerHTML = `<span class="error">❌ Network error:</span>\n${error.message}`;
+            }
+        }
+        
+        // Test admin menu API
+        async function testAdminMenu() {
+            const output = document.getElementById('admin-output');
+            const token = localStorage.getItem('adminToken');
+            
+            if (!token) {
+                output.innerHTML = '<span class="error">❌ No admin token found. Please login first.</span>';
+                return;
+            }
+            
+            output.textContent = 'Testing admin menu API...';
+            
+            try {
+                const response = await fetch('/api/admin/menu', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    output.innerHTML = `<span class="success">✅ Admin menu API working!</span>\nFound ${data.length} items:\n${JSON.stringify(data, null, 2)}`;
+                } else {
+                    output.innerHTML = `<span class="error">❌ Admin menu API error:</span>\n${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                output.innerHTML = `<span class="error">❌ Network error:</span>\n${error.message}`;
+            }
+        }
+        
+        // Add sample menu item
+        async function addSampleItem() {
+            const output = document.getElementById('admin-output');
+            const token = localStorage.getItem('adminToken');
+            
+            if (!token) {
+                output.innerHTML = '<span class="error">❌ No admin token found. Please login first.</span>';
+                return;
+            }
+            
+            const sampleItem = {
+                name: "Test Dish " + Date.now(),
+                category: "Starters",
+                price: 150,
+                img: "assets/images/download.jpg",
+                veg: true,
+                spicy: false,
+                popular: false
+            };
+            
+            output.textContent = 'Adding sample item...';
+            
+            try {
+                const response = await fetch('/api/admin/menu', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify(sampleItem)
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    output.innerHTML = `<span class="success">✅ Sample item added successfully!</span>\n${JSON.stringify(data, null, 2)}`;
+                } else {
+                    output.innerHTML = `<span class="error">❌ Failed to add item:</span>\n${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                output.innerHTML = `<span class="error">❌ Network error:</span>\n${error.message}`;
+            }
+        }
+        
+        // Profile system tests
+        function setupTestProfile() {
+            // Create a complete test user profile
+            const testUser = {
+                name: "Test User",
+                email: "test@tindibandi.com",
+                phone: "+91 98765 43210",
+                username: "testuser"
+            };
+            
+            const initials = testUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
+            
+            // Set all required localStorage items
+            localStorage.setItem('tindi_jwt', 'test_jwt_token_valid');
+            localStorage.setItem('user', JSON.stringify(testUser));
+            localStorage.setItem('userInitials', initials);
+            
+            document.getElementById('profile-output').innerHTML = `<span class="success">✅ Complete test profile setup!</span>\nUser: ${JSON.stringify(testUser, null, 2)}\nInitials: ${initials}\n\n<strong>Now go to main page to see profile working!</strong>`;
+            
+            // Trigger profile update if on main page
+            if (typeof setupHeaderProfile === 'function') {
+                setupHeaderProfile();
+            }
+        }
+        
+        // Fix current user data
+        function fixCurrentProfile() {
+            const currentUser = localStorage.getItem('user');
+            if (currentUser) {
+                try {
+                    const user = JSON.parse(currentUser);
+                    
+                    // Add missing data
+                    if (!user.name && user.username) {
+                        user.name = user.username.split('@')[0]; // Use part before @ as name
+                        if (!user.email && user.username.includes('@')) {
+                            user.email = user.username;
+                        }
+                    }
+                    
+                    // Generate JWT if missing
+                    if (!localStorage.getItem('tindi_jwt')) {
+                        localStorage.setItem('tindi_jwt', 'fixed_jwt_token_' + Date.now());
+                    }
+                    
+                    // Generate initials if missing
+                    if (!localStorage.getItem('userInitials') && user.name) {
+                        const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
+                        localStorage.setItem('userInitials', initials);
+                    }
+                    
+                    // Save updated user
+                    localStorage.setItem('user', JSON.stringify(user));
+                    
+                    document.getElementById('profile-output').innerHTML = `<span class="success">✅ Fixed current profile!</span>\nUpdated user: ${JSON.stringify(user, null, 2)}`;
+                } catch (e) {
+                    document.getElementById('profile-output').innerHTML = `<span class="error">❌ Error fixing profile:</span>\n${e.message}`;
+                }
+            } else {
+                document.getElementById('profile-output').innerHTML = '<span class="error">❌ No user data found to fix</span>';
+            }
+        }
+        
+        function checkProfileState() {
+            const jwt = localStorage.getItem('tindi_jwt');
+            const user = localStorage.getItem('user');
+            const initials = localStorage.getItem('userInitials');
+            
+            const output = document.getElementById('profile-output');
+            output.innerHTML = `Profile State Check:\nJWT: ${jwt || 'Not found'}\nUser: ${user || 'Not found'}\nInitials: ${initials || 'Not found'}`;
+        }
+        
+        function clearProfileData() {
+            localStorage.removeItem('tindi_jwt');
+            localStorage.removeItem('user');
+            localStorage.removeItem('userInitials');
+            document.getElementById('profile-output').innerHTML = '<span class="success">✅ Profile data cleared!</span>';
+        }
+        
+        // Image test
+        function testImages() {
+            const output = document.getElementById('image-output');
+            const preview = document.getElementById('image-preview');
+            
+            const testImages = [
+                'assets/images/download.jpg',
+                'assets/images/veg.webp',
+                'assets/images/nonveg.png',
+                'assets/images/spicy.png',
+                'assets/images/popular.png'
+            ];
+            
+            output.textContent = 'Testing image loading...';
+            preview.innerHTML = '';
+            
+            let results = [];
+            let loaded = 0;
+            
+            testImages.forEach(imgPath => {
+                const img = new Image();
+                img.onload = () => {
+                    results.push(`✅ ${imgPath} - OK`);
+                    const previewImg = document.createElement('img');
+                    previewImg.src = '/' + imgPath;
+                    previewImg.style.cssText = 'width:50px;height:50px;object-fit:cover;margin:5px;border:1px solid #ddd;';
+                    preview.appendChild(previewImg);
+                    
+                    loaded++;
+                    if (loaded === testImages.length) {
+                        output.innerHTML = results.join('\n');
+                    }
+                };
+                img.onerror = () => {
+                    results.push(`❌ ${imgPath} - Failed to load`);
+                    loaded++;
+                    if (loaded === testImages.length) {
+                        output.innerHTML = results.join('\n');
+                    }
+                };
+                img.src = '/' + imgPath;
+            });
+        }
+    </script>
+</body>
+</html>

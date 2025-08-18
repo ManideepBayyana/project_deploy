@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Register | Tindi Bandi</title>
+  <!-- Make sure style.css is in public/css/ -->
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    .error {
+      color: red;
+      font-size: 13px;
+      display: block;
+      margin-bottom: 5px;
+    }
+    .success {
+      color: green;
+      font-size: 13px;
+      margin-bottom: 5px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #ff5722;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+      transition: 0.3s ease;
+    }
+    button:hover {
+      background-color: #e64a19;
+      transform: scale(1.03);
+    }
+    .criteria {
+      list-style: none;
+      padding-left: 0;
+      font-size: 13px;
+    }
+    .criteria li {
+      margin-bottom: 4px;
+    }
+    .criteria .valid {
+      color: green;
+    }
+    .criteria .invalid {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">🍴 Tindi Bandi</div>
+    <a href="/index.html" class="back-link">⬅ Back to Menu</a>
+  </header>
+
+  <section class="auth-section">
+    <div class="auth-container">
+      <form id="registerForm">
+        <h2>Register</h2>
+
+        <label for="firstName">First Name:</label>
+        <input type="text" id="firstName" placeholder="Enter your first name" required />
+        <small class="error" id="firstNameError"></small>
+
+        <label for="lastName">Last Name:</label>
+        <input type="text" id="lastName" placeholder="Enter your last name" required />
+        <small class="error" id="lastNameError"></small>
+
+        <label for="registerEmail">Email:</label>
+        <input type="email" id="registerEmail" placeholder="Enter email address" required />
+        <small class="error" id="emailError"></small>
+
+        <label for="mobileNumber">Mobile Number:</label>
+        <input type="tel" id="mobileNumber" placeholder="Enter mobile number (+1234567890)" required />
+        <small class="error" id="mobileError"></small>
+
+        <label for="dateOfBirth">Date of Birth:</label>
+        <input type="date" id="dateOfBirth" required />
+        <small class="error" id="dobError"></small>
+
+        <label for="username">Username:</label>
+        <input type="text" id="username" placeholder="Choose a username" required />
+        <small class="error" id="usernameError"></small>
+
+        <label for="registerPassword">Password:</label>
+        <input type="password" id="registerPassword" placeholder="Enter password" />
+        <ul class="criteria" id="passwordCriteria">
+          <li id="length" class="invalid">Minimum 8 characters</li>
+          <li id="upper" class="invalid">At least 1 uppercase letter</li>
+          <li id="lower" class="invalid">At least 1 lowercase letter</li>
+          <li id="special" class="invalid">At least 1 special character (!@#$%)</li>
+        </ul>
+        <small class="error" id="passwordError"></small>
+
+        <label for="confirmPassword">Confirm Password:</label>
+        <input type="password" id="confirmPassword" placeholder="Confirm password" />
+        <small class="error" id="confirmPasswordError"></small>
+
+        <button type="submit">Register</button>
+      </form>
+
+      <p>Already have an account? <a href="/login.html">Login here</a></p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-about">
+        <h3>🍴 Tindi Bandi</h3>
+        <p>Delicious food delivered to your doorstep. Fresh ingredients, quick service, and unbeatable taste!</p>
+      </div>
+      <div class="footer-links">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="/index.html">Home</a></li>
+          <li><a href="/index.html#starters">Starters</a></li>
+          <li><a href="/index.html#main-course">Main Course</a></li>
+          <li><a href="/index.html#desserts">Desserts</a></li>
+          <li><a href="/index.html#beverages">Beverages</a></li>
+        </ul>
+      </div>
+      <div class="footer-contact">
+        <h4>Contact Us</h4>
+        <p>Email: support@tindibandi.com</p>
+        <p>Phone: +91 90632 52519</p>
+        <p>Location: Narasaraopet, India</p>
+      </div>
+      <div class="footer-social">
+        <h4>Follow Us</h4>
+        <a href="#">Facebook</a> |
+        <a href="#">Instagram</a> |
+        <a href="#">Twitter</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Tindi Bandi. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Get form field elements
+    const firstNameField = document.getElementById("firstName");
+    const lastNameField = document.getElementById("lastName");
+    const emailField = document.getElementById("registerEmail");
+    const mobileField = document.getElementById("mobileNumber");
+    const dobField = document.getElementById("dateOfBirth");
+    const usernameField = document.getElementById("username");
+    const passwordField = document.getElementById("registerPassword");
+    const confirmPasswordField = document.getElementById("confirmPassword");
+
+    // Get error elements
+    const firstNameError = document.getElementById("firstNameError");
+    const lastNameError = document.getElementById("lastNameError");
+    const emailError = document.getElementById("emailError");
+    const mobileError = document.getElementById("mobileError");
+    const dobError = document.getElementById("dobError");
+    const usernameError = document.getElementById("usernameError");
+    const passwordError = document.getElementById("passwordError");
+    const confirmPasswordError = document.getElementById("confirmPasswordError");
+
+    // Password criteria elements
+    const lengthEl = document.getElementById("length");
+    const upperEl = document.getElementById("upper");
+    const lowerEl = document.getElementById("lower");
+    const specialEl = document.getElementById("special");
+
+    // Set maximum date (today - 13 years)
+    const today = new Date();
+    const maxDate = new Date(today.getFullYear() - 13, today.getMonth(), today.getDate());
+    dobField.max = maxDate.toISOString().split('T')[0];
+
+    // Real-time password validation
+    passwordField.addEventListener("input", () => {
+      const value = passwordField.value;
+      toggleCriteria(lengthEl, value.length >= 8);
+      toggleCriteria(upperEl, /[A-Z]/.test(value));
+      toggleCriteria(lowerEl, /[a-z]/.test(value));
+      toggleCriteria(specialEl, /[!@#$%^&*]/.test(value));
+    });
+
+    function toggleCriteria(element, condition) {
+      element.classList.toggle("valid", condition);
+      element.classList.toggle("invalid", !condition);
+    }
+
+    // Clear error messages when user starts typing
+    function clearErrorOnInput(field, errorElement) {
+      field.addEventListener('input', () => {
+        errorElement.textContent = '';
+      });
+    }
+
+    clearErrorOnInput(firstNameField, firstNameError);
+    clearErrorOnInput(lastNameField, lastNameError);
+    clearErrorOnInput(emailField, emailError);
+    clearErrorOnInput(mobileField, mobileError);
+    clearErrorOnInput(dobField, dobError);
+    clearErrorOnInput(usernameField, usernameError);
+    clearErrorOnInput(passwordField, passwordError);
+    clearErrorOnInput(confirmPasswordField, confirmPasswordError);
+
+    document.getElementById("registerForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      // Clear all previous errors
+      const errorFields = [firstNameError, lastNameError, emailError, mobileError, 
+                          dobError, usernameError, passwordError, confirmPasswordError];
+      errorFields.forEach(field => field.textContent = "");
+
+      let isValid = true;
+
+      // Validation patterns
+      const nameRegex = /^[A-Za-z\s]{1,50}$/;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const mobileRegex = /^[+]?[1-9]\d{1,14}$/;
+      const usernameRegex = /^[A-Za-z0-9_]{3,20}$/;
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$/;
+
+      // Get field values
+      const firstName = firstNameField.value.trim();
+      const lastName = lastNameField.value.trim();
+      const email = emailField.value.trim();
+      const mobileNumber = mobileField.value.trim();
+      const dateOfBirth = dobField.value;
+      const username = usernameField.value.trim();
+      const password = passwordField.value.trim();
+      const confirmPassword = confirmPasswordField.value.trim();
+
+      // Validate first name
+      if (!firstName) {
+        firstNameError.textContent = "First name is required.";
+        isValid = false;
+      } else if (!nameRegex.test(firstName)) {
+        firstNameError.textContent = "First name must contain only letters and spaces (max 50 chars).";
+        isValid = false;
+      }
+
+      // Validate last name
+      if (!lastName) {
+        lastNameError.textContent = "Last name is required.";
+        isValid = false;
+      } else if (!nameRegex.test(lastName)) {
+        lastNameError.textContent = "Last name must contain only letters and spaces (max 50 chars).";
+        isValid = false;
+      }
+
+      // Validate email
+      if (!email) {
+        emailError.textContent = "Email is required.";
+        isValid = false;
+      } else if (!emailRegex.test(email)) {
+        emailError.textContent = "Please enter a valid email address.";
+        isValid = false;
+      }
+
+      // Validate mobile number
+      if (!mobileNumber) {
+        mobileError.textContent = "Mobile number is required.";
+        isValid = false;
+      } else if (!mobileRegex.test(mobileNumber)) {
+        mobileError.textContent = "Please enter a valid mobile number.";
+        isValid = false;
+      }
+
+      // Validate date of birth
+      if (!dateOfBirth) {
+        dobError.textContent = "Date of birth is required.";
+        isValid = false;
+      } else {
+        const dob = new Date(dateOfBirth);
+        const today = new Date();
+        const age = Math.floor((today - dob) / (365.25 * 24 * 60 * 60 * 1000));
+        
+        if (age < 13) {
+          dobError.textContent = "You must be at least 13 years old to register.";
+          isValid = false;
+        } else if (dob > today) {
+          dobError.textContent = "Date of birth cannot be in the future.";
+          isValid = false;
+        }
+      }
+
+      // Validate username
+      if (!username) {
+        usernameError.textContent = "Username is required.";
+        isValid = false;
+      } else if (!usernameRegex.test(username)) {
+        usernameError.textContent = "Username must be 3-20 characters, letters, numbers, and underscores only.";
+        isValid = false;
+      }
+
+      // Validate password
+      if (!password) {
+        passwordError.textContent = "Password is required.";
+        isValid = false;
+      } else if (!passwordRegex.test(password)) {
+        passwordError.textContent = "Password does not meet all criteria.";
+        isValid = false;
+      }
+
+      // Validate password confirmation
+      if (!confirmPassword) {
+        confirmPasswordError.textContent = "Please confirm your password.";
+        isValid = false;
+      } else if (password !== confirmPassword) {
+        confirmPasswordError.textContent = "Passwords do not match.";
+        isValid = false;
+      }
+
+      if (!isValid) return;
+
+      // Disable submit button to prevent double submission
+      const submitButton = document.querySelector('button[type="submit"]');
+      submitButton.disabled = true;
+      submitButton.textContent = 'Registering...';
+
+      // ---- POST to backend ----
+      fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ 
+          username, 
+          password, 
+          firstName, 
+          lastName, 
+          email, 
+          mobileNumber, 
+          dateOfBirth 
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          // Display error in the most relevant field
+          if (data.error.includes('username') || data.error.includes('Username')) {
+            usernameError.textContent = data.error;
+          } else if (data.error.includes('email') || data.error.includes('Email')) {
+            emailError.textContent = data.error;
+          } else if (data.error.includes('mobile') || data.error.includes('Mobile')) {
+            mobileError.textContent = data.error;
+          } else if (data.error.includes('age') || data.error.includes('13')) {
+            dobError.textContent = data.error;
+          } else {
+            // General error in email field
+            emailError.textContent = data.error;
+          }
+        } else {
+          // Store user info for display after login
+          localStorage.setItem("registeredName", `${firstName} ${lastName}`);
+          alert("Registration successful! Please login to continue.");
+          window.location.href = "/login.html";
+        }
+      })
+      .catch(err => {
+        console.error('Registration error:', err);
+        emailError.textContent = "Server error, please try again.";
+      })
+      .finally(() => {
+        // Re-enable submit button
+        submitButton.disabled = false;
+        submitButton.textContent = 'Register';
+      });
+    });
+  </script>
+</body>
+</html>

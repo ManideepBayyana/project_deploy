@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>User Profile | Tindi Bandi</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    .profile-section {
+      padding: 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-top: 2rem;
+    }
+    
+    .profile-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .profile-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(45deg, #ff5722, #e64a19);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      color: white;
+      margin: 0 auto 1rem;
+    }
+    
+    .profile-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+      .profile-form {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+    
+    .form-group label {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+    
+    .form-group input {
+      padding: 0.75rem;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: #ff5722;
+      box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.1);
+    }
+    
+    .form-group input:disabled {
+      background-color: #f5f5f5;
+      color: #666;
+      cursor: not-allowed;
+    }
+    
+    .error {
+      color: #d32f2f;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+      display: block;
+    }
+    
+    .success {
+      color: #2e7d32;
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+      text-align: center;
+      padding: 0.75rem;
+      background-color: #e8f5e8;
+      border-radius: 5px;
+    }
+    
+    .profile-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      flex: 1;
+    }
+    
+    .btn-primary {
+      background-color: #ff5722;
+      color: white;
+    }
+    
+    .btn-primary:hover:not(:disabled) {
+      background-color: #e64a19;
+      transform: translateY(-2px);
+    }
+    
+    .btn-secondary {
+      background-color: #6c757d;
+      color: white;
+    }
+    
+    .btn-secondary:hover:not(:disabled) {
+      background-color: #545b62;
+    }
+    
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+    
+    .profile-info {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 5px;
+      margin-bottom: 2rem;
+    }
+    
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    .info-item:last-child {
+      border-bottom: none;
+    }
+    
+    .info-label {
+      font-weight: bold;
+      color: #555;
+    }
+    
+    .info-value {
+      color: #333;
+    }
+    
+    .edit-mode {
+      display: none;
+    }
+    
+    .edit-mode.active {
+      display: block;
+    }
+    
+    .view-mode.hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">🍴 Tindi Bandi</div>
+    <nav>
+      <a href="/index.html">Menu</a>
+      <a href="/orders.html">Orders</a>
+      <a href="/profile.html" class="active">Profile</a>
+      <a href="#" id="logoutBtn">Logout</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="profile-section">
+      <div class="profile-header">
+        <div class="profile-avatar" id="profileAvatar">👤</div>
+        <h1 id="profileTitle">Loading...</h1>
+        <p id="profileSubtitle">Manage your account information</p>
+      </div>
+
+      <div id="successMessage" class="success" style="display: none;"></div>
+
+      <!-- View Mode -->
+      <div class="view-mode" id="viewMode">
+        <div class="profile-info">
+          <div class="info-item">
+            <span class="info-label">Username:</span>
+            <span class="info-value" id="viewUsername">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">First Name:</span>
+            <span class="info-value" id="viewFirstName">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Last Name:</span>
+            <span class="info-value" id="viewLastName">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Email:</span>
+            <span class="info-value" id="viewEmail">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Mobile Number:</span>
+            <span class="info-value" id="viewMobile">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Date of Birth:</span>
+            <span class="info-value" id="viewDOB">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Member Since:</span>
+            <span class="info-value" id="viewMemberSince">-</span>
+          </div>
+        </div>
+        
+        <div class="profile-actions">
+          <button class="btn btn-primary" id="editBtn">Edit Profile</button>
+        </div>
+      </div>
+
+      <!-- Edit Mode -->
+      <div class="edit-mode" id="editMode">
+        <form id="profileForm">
+          <div class="profile-form">
+            <div class="form-group">
+              <label for="editFirstName">First Name:</label>
+              <input type="text" id="editFirstName" required />
+              <small class="error" id="firstNameError"></small>
+            </div>
+
+            <div class="form-group">
+              <label for="editLastName">Last Name:</label>
+              <input type="text" id="editLastName" required />
+              <small class="error" id="lastNameError"></small>
+            </div>
+
+            <div class="form-group full-width">
+              <label for="editEmail">Email:</label>
+              <input type="email" id="editEmail" required />
+              <small class="error" id="emailError"></small>
+            </div>
+
+            <div class="form-group">
+              <label for="editMobile">Mobile Number:</label>
+              <input type="tel" id="editMobile" placeholder="+1234567890" required />
+              <small class="error" id="mobileError"></small>
+            </div>
+
+            <div class="form-group">
+              <label for="editDOB">Date of Birth:</label>
+              <input type="date" id="editDOB" required />
+              <small class="error" id="dobError"></small>
+            </div>
+
+            <div class="form-group">
+              <label for="editUsername">Username:</label>
+              <input type="text" id="editUsername" disabled />
+              <small style="color: #666; font-size: 0.8rem;">Username cannot be changed</small>
+            </div>
+
+            <div class="profile-actions">
+              <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+              <button type="submit" class="btn btn-primary" id="saveBtn">Save Changes</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-about">
+        <h3>🍴 Tindi Bandi</h3>
+        <p>Delicious food delivered to your doorstep. Fresh ingredients, quick service, and unbeatable taste!</p>
+      </div>
+      <div class="footer-links">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="/index.html">Home</a></li>
+          <li><a href="/index.html#starters">Starters</a></li>
+          <li><a href="/index.html#main-course">Main Course</a></li>
+          <li><a href="/index.html#desserts">Desserts</a></li>
+          <li><a href="/index.html#beverages">Beverages</a></li>
+        </ul>
+      </div>
+      <div class="footer-contact">
+        <h4>Contact Us</h4>
+        <p>Email: support@tindibandi.com</p>
+        <p>Phone: +91 90632 52519</p>
+        <p>Location: Narasaraopet, India</p>
+      </div>
+      <div class="footer-social">
+        <h4>Follow Us</h4>
+        <a href="#">Facebook</a> |
+        <a href="#">Instagram</a> |
+        <a href="#">Twitter</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Tindi Bandi. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Check if user is logged in
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = '/login.html';
+    }
+
+    // DOM elements
+    const profileAvatar = document.getElementById('profileAvatar');
+    const profileTitle = document.getElementById('profileTitle');
+    const successMessage = document.getElementById('successMessage');
+    
+    // View mode elements
+    const viewMode = document.getElementById('viewMode');
+    const viewUsername = document.getElementById('viewUsername');
+    const viewFirstName = document.getElementById('viewFirstName');
+    const viewLastName = document.getElementById('viewLastName');
+    const viewEmail = document.getElementById('viewEmail');
+    const viewMobile = document.getElementById('viewMobile');
+    const viewDOB = document.getElementById('viewDOB');
+    const viewMemberSince = document.getElementById('viewMemberSince');
+    
+    // Edit mode elements
+    const editMode = document.getElementById('editMode');
+    const profileForm = document.getElementById('profileForm');
+    const editFirstName = document.getElementById('editFirstName');
+    const editLastName = document.getElementById('editLastName');
+    const editEmail = document.getElementById('editEmail');
+    const editMobile = document.getElementById('editMobile');
+    const editDOB = document.getElementById('editDOB');
+    const editUsername = document.getElementById('editUsername');
+    
+    // Error elements
+    const firstNameError = document.getElementById('firstNameError');
+    const lastNameError = document.getElementById('lastNameError');
+    const emailError = document.getElementById('emailError');
+    const mobileError = document.getElementById('mobileError');
+    const dobError = document.getElementById('dobError');
+    
+    // Buttons
+    const editBtn = document.getElementById('editBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    let currentUser = null;
+
+    // Load user profile
+    async function loadProfile() {
+      try {
+        const response = await fetch('/api/auth/profile', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.status === 401) {
+          localStorage.removeItem('token');
+          window.location.href = '/login.html';
+          return;
+        }
+
+        const data = await response.json();
+        
+        if (data.error) {
+          alert('Error loading profile: ' + data.error);
+          return;
+        }
+
+        currentUser = data.user;
+        displayProfile(currentUser);
+      } catch (error) {
+        console.error('Error loading profile:', error);
+        alert('Error loading profile. Please try again.');
+      }
+    }
+
+    // Display profile data
+    function displayProfile(user) {
+      // Update header
+      profileTitle.textContent = user.fullName || `${user.firstName} ${user.lastName}`;
+      profileAvatar.textContent = (user.firstName?.[0] + user.lastName?.[0]).toUpperCase();
+      
+      // Update view mode
+      viewUsername.textContent = user.username;
+      viewFirstName.textContent = user.firstName;
+      viewLastName.textContent = user.lastName;
+      viewEmail.textContent = user.email;
+      viewMobile.textContent = user.mobileNumber;
+      viewDOB.textContent = new Date(user.dateOfBirth).toLocaleDateString();
+      viewMemberSince.textContent = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-';
+      
+      // Update edit mode
+      editFirstName.value = user.firstName;
+      editLastName.value = user.lastName;
+      editEmail.value = user.email;
+      editMobile.value = user.mobileNumber;
+      editDOB.value = new Date(user.dateOfBirth).toISOString().split('T')[0];
+      editUsername.value = user.username;
+      
+      // Set max date for DOB (13 years ago)
+      const today = new Date();
+      const maxDate = new Date(today.getFullYear() - 13, today.getMonth(), today.getDate());
+      editDOB.max = maxDate.toISOString().split('T')[0];
+    }
+
+    // Toggle between view and edit modes
+    function toggleEditMode(isEditing) {
+      if (isEditing) {
+        viewMode.classList.add('hidden');
+        editMode.classList.add('active');
+      } else {
+        viewMode.classList.remove('hidden');
+        editMode.classList.remove('active');
+        clearErrors();
+      }
+    }
+
+    // Clear error messages
+    function clearErrors() {
+      [firstNameError, lastNameError, emailError, mobileError, dobError].forEach(el => {
+        el.textContent = '';
+      });
+    }
+
+    // Show success message
+    function showSuccess(message) {
+      successMessage.textContent = message;
+      successMessage.style.display = 'block';
+      setTimeout(() => {
+        successMessage.style.display = 'none';
+      }, 5000);
+    }
+
+    // Validate form
+    function validateForm() {
+      clearErrors();
+      let isValid = true;
+
+      const nameRegex = /^[A-Za-z\s]{1,50}$/;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const mobileRegex = /^[+]?[1-9]\d{1,14}$/;
+
+      const firstName = editFirstName.value.trim();
+      const lastName = editLastName.value.trim();
+      const email = editEmail.value.trim();
+      const mobile = editMobile.value.trim();
+      const dob = editDOB.value;
+
+      if (!firstName || !nameRegex.test(firstName)) {
+        firstNameError.textContent = 'First name must contain only letters and spaces (max 50 chars).';
+        isValid = false;
+      }
+
+      if (!lastName || !nameRegex.test(lastName)) {
+        lastNameError.textContent = 'Last name must contain only letters and spaces (max 50 chars).';
+        isValid = false;
+      }
+
+      if (!email || !emailRegex.test(email)) {
+        emailError.textContent = 'Please enter a valid email address.';
+        isValid = false;
+      }
+
+      if (!mobile || !mobileRegex.test(mobile)) {
+        mobileError.textContent = 'Please enter a valid mobile number.';
+        isValid = false;
+      }
+
+      if (!dob) {
+        dobError.textContent = 'Date of birth is required.';
+        isValid = false;
+      } else {
+        const dobDate = new Date(dob);
+        const today = new Date();
+        const age = Math.floor((today - dobDate) / (365.25 * 24 * 60 * 60 * 1000));
+        
+        if (age < 13) {
+          dobError.textContent = 'You must be at least 13 years old.';
+          isValid = false;
+        }
+      }
+
+      return isValid;
+    }
+
+    // Update profile
+    async function updateProfile() {
+      if (!validateForm()) return;
+
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+
+      try {
+        const formData = {
+          firstName: editFirstName.value.trim(),
+          lastName: editLastName.value.trim(),
+          email: editEmail.value.trim(),
+          mobileNumber: editMobile.value.trim(),
+          dateOfBirth: editDOB.value
+        };
+
+        const response = await fetch('/api/auth/profile', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+          // Display error in the appropriate field
+          if (data.error.includes('email') || data.error.includes('Email')) {
+            emailError.textContent = data.error;
+          } else if (data.error.includes('mobile') || data.error.includes('Mobile')) {
+            mobileError.textContent = data.error;
+          } else if (data.error.includes('age') || data.error.includes('13')) {
+            dobError.textContent = data.error;
+          } else {
+            firstNameError.textContent = data.error;
+          }
+          return;
+        }
+
+        // Update successful
+        currentUser = data.user;
+        displayProfile(currentUser);
+        toggleEditMode(false);
+        showSuccess('Profile updated successfully!');
+        
+        // Update user data in localStorage if it exists
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          localStorage.setItem('user', JSON.stringify(currentUser));
+        }
+        
+      } catch (error) {
+        console.error('Error updating profile:', error);
+        firstNameError.textContent = 'Server error. Please try again.';
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Changes';
+      }
+    }
+
+    // Event listeners
+    editBtn.addEventListener('click', () => toggleEditMode(true));
+    cancelBtn.addEventListener('click', () => {
+      // Reset form to original values
+      displayProfile(currentUser);
+      toggleEditMode(false);
+    });
+
+    profileForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      updateProfile();
+    });
+
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login.html';
+    });
+
+    // Clear errors when user starts typing
+    [editFirstName, editLastName, editEmail, editMobile, editDOB].forEach((field, index) => {
+      const errorElements = [firstNameError, lastNameError, emailError, mobileError, dobError];
+      field.addEventListener('input', () => {
+        errorElements[index].textContent = '';
+      });
+    });
+
+    // Load profile on page load
+    loadProfile();
+  </script>
+</body>
+</html>

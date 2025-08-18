@@ -1,0 +1,160 @@
+[
+  {
+    "orderId": 27705,
+    "cart": [
+      {
+        "id": "chicken-65",
+        "name": "Chicken 65",
+        "price": 220,
+        "img": "assets/images/etrylw4u.png",
+        "qty": 3
+      },
+      {
+        "id": "crispy-corn",
+        "name": "Crispy Corn",
+        "price": 130,
+        "img": "assets/images/bymr7yuq.png",
+        "qty": 2
+      },
+      {
+        "id": "paneer-butter-masala",
+        "name": "Paneer Butter Masala",
+        "price": 220,
+        "img": "assets/images/2a5v488p.png",
+        "qty": 1
+      },
+      {
+        "id": "paneer-tikka",
+        "name": "Paneer Tikka",
+        "price": 180,
+        "img": "assets/images/71nw11ca.png",
+        "qty": 1
+      }
+    ],
+    "subtotal": 1320,
+    "tax": 105.6,
+    "total": 1425.6,
+    "status": "Preparing",
+    "createdAt": "2025-07-30T19:53:59.639Z",
+    "rating": "😍"
+  },
+  {
+    "orderId": 22580,
+    "cart": [
+      {
+        "id": "chicken-65",
+        "name": "Chicken 65",
+        "price": 220,
+        "img": "assets/images/etrylw4u.png",
+        "qty": 3
+      }
+    ],
+    "subtotal": 660,
+    "tax": 52.8,
+    "total": 712.8,
+    "status": "Preparing",
+    "createdAt": "2025-07-30T20:00:45.501Z"
+  },
+  {
+    "orderId": 59892,
+    "cart": [
+      {
+        "id": "crispy-corn",
+        "name": "Crispy Corn",
+        "price": 130,
+        "img": "assets/images/bymr7yuq.png",
+        "qty": 2
+      },
+      {
+        "id": "chicken-65",
+        "name": "Chicken 65",
+        "price": 220,
+        "img": "assets/images/etrylw4u.png",
+        "qty": 2
+      }
+    ],
+    "subtotal": 700,
+    "tax": 56,
+    "total": 756,
+    "status": "Preparing",
+    "createdAt": "2025-07-31T04:54:54.312Z",
+    "rating": "😐"
+  },
+  {
+    "orderId": 8481,
+    "cart": [
+      {
+        "id": "chicken-65",
+        "name": "Chicken 65",
+        "price": 220,
+        "img": "assets/images/etrylw4u.png",
+        "qty": 4
+      }
+    ],
+    "subtotal": 880,
+    "tax": 70.4,
+    "total": 950.4,
+    "status": "Preparing",
+    "createdAt": "2025-07-31T06:33:27.353Z",
+    "rating": "🤢"
+  },
+  {
+    "orderId": 22375,
+    "cart": [
+      {
+        "id": "chicken-65",
+        "name": "Chicken 65",
+        "price": 220,
+        "img": "assets/images/etrylw4u.png",
+        "qty": 2
+      }
+    ],
+    "subtotal": 440,
+    "tax": 35.2,
+    "total": 475.2,
+    "status": "Preparing",
+    "createdAt": "2025-07-31T10:07:46.292Z",
+    "rating": "🤢"
+  },
+  {
+    "orderId": 56266,
+    "cart": [
+      {
+        "id": "chicken-65",
+        "name": "Chicken 65",
+        "price": 220,
+        "img": "assets/images/etrylw4u.png",
+        "qty": 1
+      },
+      {
+        "id": "paneer-tikka",
+        "name": "Paneer Tikka",
+        "price": 180,
+        "img": "assets/images/71nw11ca.png",
+        "qty": 1
+      }
+    ],
+    "subtotal": 400,
+    "tax": 32,
+    "total": 432,
+    "status": "Preparing",
+    "createdAt": "2025-08-05T15:35:22.245Z"
+  },
+  {
+    "orderId": 83978,
+    "cart": [
+      {
+        "id": "chicken-65",
+        "name": "Chicken 65",
+        "price": 220,
+        "img": "assets/images/etrylw4u.png",
+        "qty": 2
+      }
+    ],
+    "subtotal": 440,
+    "tax": 35.2,
+    "total": 475.2,
+    "status": "Preparing",
+    "createdAt": "2025-08-05T17:25:46.650Z"
+  }
+]

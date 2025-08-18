@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Profile</title>
+</head>
+<body>
+    <h1>Test Profile Setup</h1>
+    <button onclick="setupTestUser()">Setup Test User</button>
+    <button onclick="clearUser()">Clear User</button>
+    
+    <script>
+        function setupTestUser() {
+            // Mock user data for testing
+            const testUser = {
+                name: "John Doe",
+                email: "john@example.com", 
+                phone: "+91 98765 43210",
+                username: "johndoe"
+            };
+            
+            // Calculate initials
+            const initials = testUser.name
+                .split(' ')
+                .map(name => name[0])
+                .join('')
+                .toUpperCase();
+            
+            // Store in localStorage like the login would
+            localStorage.setItem('tindi_jwt', 'test_jwt_token_123');
+            localStorage.setItem('user', JSON.stringify(testUser));
+            localStorage.setItem('userInitials', initials);
+            
+            console.log('Test user setup:', { testUser, initials });
+            console.log('LocalStorage contents:', {
+                jwt: localStorage.getItem('tindi_jwt'),
+                user: localStorage.getItem('user'),
+                initials: localStorage.getItem('userInitials')
+            });
+            
+            alert('Test user setup complete! Go to the main page (http://localhost:3001) to see profile.');
+        }
+        
+        function clearUser() {
+            localStorage.removeItem('tindi_jwt');
+            localStorage.removeItem('user');
+            localStorage.removeItem('userInitials');
+            alert('User data cleared!');
+        }
+    </script>
+</body>
+</html>

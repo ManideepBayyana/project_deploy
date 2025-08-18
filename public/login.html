@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login | Tindi Bandi</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    .error {
+      color: red;
+      font-size: 13px;
+      display: block;
+      margin-bottom: 5px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #ff5722;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+      transition: 0.3s ease;
+    }
+    button:hover {
+      background-color: #e64a19;
+      transform: scale(1.03);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">🍴 Tindi Bandi</div>
+    <a href="/index.html" class="back-link">⬅ Back to Menu</a>
+  </header>
+
+  <section class="auth-section">
+    <div class="auth-container">
+      <form id="loginForm">
+        <h2>Login</h2>
+        <label for="loginEmail">Email or Username:</label>
+        <input type="text" id="loginEmail" placeholder="Enter email or username" required autocomplete="username"/>
+        <small class="error" id="loginEmailError"></small>
+
+        <label for="loginPassword">Password:</label>
+        <input type="password" id="loginPassword" placeholder="Enter password" required minlength="8" autocomplete="current-password"/>
+        <small class="error" id="loginPasswordError"></small>
+        <small class="error" id="loginServerError"></small>
+
+        <button type="submit">Login</button>
+      </form>
+
+      <p>Don't have an account? <a href="/register.html">Register here</a></p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-about">
+        <h3>🍴 Tindi Bandi</h3>
+        <p>Delicious food delivered to your doorstep. Fresh ingredients, quick service, and unbeatable taste!</p>
+      </div>
+      <div class="footer-links">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="/index.html">Home</a></li>
+          <li><a href="/index.html#starters">Starters</a></li>
+          <li><a href="/index.html#main-course">Main Course</a></li>
+          <li><a href="/index.html#desserts">Desserts</a></li>
+          <li><a href="/index.html#beverages">Beverages</a></li>
+        </ul>
+      </div>
+      <div class="footer-contact">
+        <h4>Contact Us</h4>
+        <p>Email: support@tindibandi.com</p>
+        <p>Phone: +91 90632 52519</p>
+        <p>Location: Narasaraopet, India</p>
+      </div>
+      <div class="footer-social">
+        <h4>Follow Us</h4>
+        <a href="#">Facebook</a> |
+        <a href="#">Instagram</a> |
+        <a href="#">Twitter</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Tindi Bandi. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+  document.getElementById("loginForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value.trim();
+    let emailError = document.getElementById("loginEmailError");
+    let passwordError = document.getElementById("loginPasswordError");
+    let serverError = document.getElementById("loginServerError");
+
+    // Clear errors
+    emailError.textContent = "";
+    passwordError.textContent = "";
+    serverError.textContent = "";
+
+    // Validation - allow both email and username
+    let isValid = true;
+    if (!email) {
+      emailError.textContent = "Enter your email or username.";
+      isValid = false;
+    }
+    if (password.length < 8) {
+      passwordError.textContent = "Password must be at least 8 characters.";
+      isValid = false;
+    }
+    if (!isValid) return;
+
+    // --- POST TO BACKEND ---
+    fetch('/api/auth/login', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ username: email, password })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          // Show error message from backend
+          passwordError.textContent = data.error;
+        } else if (data.token) {
+          // Store JWT for authenticated requests (using both keys for compatibility)
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('tindi_jwt', data.token);
+          // Store user info for later use (for header/profile)
+          if (data.user) {
+            localStorage.setItem("user", JSON.stringify(data.user));
+            // Use enhanced user data for initials
+            const name = data.user.fullName || data.user.name || `${data.user.firstName || ''} ${data.user.lastName || ''}`.trim() || email;
+            let initials = name.split(" ").map(w => w[0]?.toUpperCase()).join("").substring(0, 2);
+            if (!initials) {
+              // Fallback: use email
+              initials = email.split("@")[0].split(".").map(s => s[0]?.toUpperCase()).join("").substring(0, 2);
+            }
+            localStorage.setItem("userInitials", initials);
+          } else {
+            // Fallback: use email
+            let initials = email.split("@")[0].split(".").map(s => s[0]?.toUpperCase()).join("").substring(0, 2);
+            localStorage.setItem("userInitials", initials);
+          }
+
+          alert("Login successful!");
+          window.location.href = "/index.html";
+        } else {
+          passwordError.textContent = "Unknown error occurred.";
+        }
+      })
+      .catch(err => {
+        serverError.textContent = "Server error. Try again.";
+        console.error(err);
+      });
+  });
+  </script>
+</body>
+</html>

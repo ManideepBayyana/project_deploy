@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Cart | Tindi Bandi</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/cart.css" />
+</head>
+<body>
+  <header>
+    <div class="logo">🍴 Tindi Bandi</div>
+    <nav>
+      <a href="/index.html" class="cart-icon">Home</a>
+      <a href="/orders.html" class="cart-icon">Orders</a>
+      <a href="/cart.html" class="cart-icon">🛒 Cart <span class="cart-count" id="cart-count">0</span></a>
+    </nav>
+  </header>
+
+  <section class="cart-section">
+    <h2>Your Cart</h2>
+    <div id="cart-items"></div>
+
+    <div class="cart-summary">
+      <p>Subtotal: ₹<span id="cart-subtotal">0</span></p>
+      <p>Taxes (8%): ₹<span id="cart-tax">0</span></p>
+      <h3>Total: ₹<span id="cart-total">0</span></h3>
+    </div>
+
+    <button id="clear-cart-btn" class="checkout-btn action-btn" type="button">Clear Cart</button>
+    <button id="checkout-btn" class="checkout-btn action-btn" type="button">Checkout</button>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-about">
+        <h3>🍴 Tindi Bandi</h3>
+        <p>Delicious food delivered to your doorstep. Fresh ingredients, quick service, and unbeatable taste!</p>
+      </div>
+      <div class="footer-links">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="/index.html">Home</a></li>
+          <li><a href="/orders.html">Orders</a></li>
+          <li><a href="/index.html#starters">Starters</a></li>
+          <li><a href="/index.html#main-course">Main Course</a></li>
+          <li><a href="/index.html#desserts">Desserts</a></li>
+          <li><a href="/index.html#beverages">Beverages</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Tindi Bandi. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script src="/js/app.js"></script>
+  <script src="/js/cart.js"></script>
+</body>
+</html>

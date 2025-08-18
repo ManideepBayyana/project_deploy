@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Status | Tindi Bandi</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <div class="logo">🍴 Tindi Bandi</div>
+    <nav>
+      <a href="/index.html" class="back-link">Home</a>
+      <a href="/orders.html" class="back-link">Orders</a>
+      <a href="/cart.html" class="cart-icon">🛒 Cart <span class="cart-count" id="cart-count">0</span></a>
+    </nav>
+  </header>
+
+  <section class="status-section" style="text-align:center; padding:40px 20px;">
+    <h2>Payment Successful!</h2>
+    <p>Your Order ID: <strong id="order-id">--</strong></p>
+    <p>Total Paid: ₹<span id="order-total">0</span></p>
+
+    <div class="progress-bar" style="max-width:400px;margin:30px auto;display:flex;justify-content:space-between;">
+      <div class="step active">Preparing</div>
+      <div class="step">On the Way</div>
+      <div class="step">Delivered</div>
+    </div>
+
+    <div id="order-status" style="margin:20px 0;color:#ff7b00;font-weight:bold;"></div>
+
+    <p style="margin-top:20px;">
+      <a href="/orders.html" style="color:#ff7b00; text-decoration:underline;">View My Orders</a>
+    </p>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-about">
+        <h3>🍴 Tindi Bandi</h3>
+        <p>Delicious food delivered to your doorstep. Fresh ingredients, quick service, and unbeatable taste!</p>
+      </div>
+      <div class="footer-links">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="/index.html">Home</a></li>
+          <li><a href="/orders.html">Orders</a></li>
+          <li><a href="/index.html#starters">Starters</a></li>
+          <li><a href="/index.html#main-course">Main Course</a></li>
+          <li><a href="/index.html#desserts">Desserts</a></li>
+          <li><a href="/index.html#beverages">Beverages</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Tindi Bandi. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

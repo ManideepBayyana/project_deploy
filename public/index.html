@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Online Food Ordering | Tindi Bandi</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/menu.css" />
+  <link rel="stylesheet" href="/css/chatbot.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="logo">🍴 Tindi Bandi</div>
+    <input type="text" placeholder="Search for dishes..." class="search-bar" aria-label="Search for dishes" id="global-search" />
+    <a href="/cart.html" class="cart-icon" aria-label="Go to cart">🛒 Cart <span class="cart-count" id="cart-count">0</span></a>
+    
+    <!-- Login/Register buttons (shown when not logged in) -->
+    <div id="auth-buttons" style="display: flex; gap: 10px; margin-left: 15px;">
+      <a href="/login.html" class="cart-icon" id="loginBtn">Login</a>
+      <a href="/register.html" class="cart-icon" id="registerBtn">Register</a>
+    </div>
+
+    <!-- Profile Dropdown (shown after login) -->
+    <div id="profile-menu" style="display:none; position:relative;">
+      <div id="profile-icon" style="display:inline-flex; align-items:center; justify-content:center; background:#ff7b00; color:white; width:40px; height:40px; border-radius:50%; font-weight:bold; cursor:pointer; font-size:16px;"></div>
+      <div id="profile-dropdown" style="display:none; position:absolute; right:0; top:45px; background:white; border:1px solid #ddd; border-radius:8px; min-width:250px; z-index:1000; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <div style="padding:15px; border-bottom:1px solid #eee; background:#f8f9fa; border-radius:8px 8px 0 0;">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+            <div id="profile-icon-small" style="background:#ff7b00; color:white; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:14px;"></div>
+            <div>
+              <div id="profile-name" style="font-weight:bold; font-size:16px; color:#333;"></div>
+              <div id="profile-email" style="font-size:12px; color:#666;"></div>
+            </div>
+          </div>
+          <div id="profile-phone" style="font-size:13px; color:#666; margin-top:4px;"></div>
+        </div>
+        <div style="padding:8px 0;">
+          <a href="/orders.html" style="display:flex; align-items:center; gap:8px; padding:10px 15px; text-decoration:none; color:#333; transition:background-color 0.2s;" onmouseover="this.style.backgroundColor='#f5f5f5'" onmouseout="this.style.backgroundColor='transparent'">
+            <span>📜</span> Order History
+          </a>
+          <div style="height:1px; background:#eee; margin:5px 0;"></div>
+          <a href="#" id="logoutBtn" style="display:flex; align-items:center; gap:8px; padding:10px 15px; text-decoration:none; color:#e53935; transition:background-color 0.2s;" onmouseover="this.style.backgroundColor='#f5f5f5'" onmouseout="this.style.backgroundColor='transparent'">
+            <span>💪</span> Logout
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Banner -->
+  <section class="hero-banner">
+    <div class="hero-content">
+      <h1>Delicious Food, Delivered Fast</h1>
+      <p>Order from Starters, Main Course, Desserts & more.</p>
+      <a href="#starters" class="hero-cta">Start Ordering</a>
+    </div>
+  </section>
+
+  <!-- Category Navigation -->
+  <nav class="categories" aria-label="Menu categories">
+    <a href="#starters" class="scroll-link">Starters</a>
+    <a href="#main-course" class="scroll-link">Main Course</a>
+    <a href="#desserts" class="scroll-link">Desserts</a>
+    <a href="#beverages" class="scroll-link">Beverages</a>
+  </nav>
+
+  <!-- Dynamic Menu Here -->
+  <div id="menu"></div>
+
+  <!-- Chatbot -->
+  <div class="chatbot" aria-live="polite">
+    <div class="chatbot-button" tabindex="0" title="Open chat">💬</div>
+    <div class="chatbot-window">
+      <div class="chat-header">Foodie Assistant</div>
+      <div class="chat-body">
+        <p>Hi! Need help choosing?</p>
+        <p>🔥 Popular: Paneer Tikka, Chicken Biryani</p>
+        <p>🎉 Offer: 10% off above ₹500</p>
+      </div>
+      <div class="chat-footer">
+        <input type="text" placeholder="Type here..." aria-label="Chat message" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-about">
+        <h3>🍴 Tindi Bandi</h3>
+        <p>Delicious food delivered to your doorstep. Fresh ingredients, quick service, and unbeatable taste!</p>
+      </div>
+      <div class="footer-links">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="/index.html">Home</a></li>
+          <li><a href="#starters">Starters</a></li>
+          <li><a href="#main-course">Main Course</a></li>
+          <li><a href="#desserts">Desserts</a></li>
+          <li><a href="#beverages">Beverages</a></li>
+        </ul>
+      </div>
+      <div class="footer-contact">
+        <h4>Contact Us</h4>
+        <p>Email: support@tindibandi.com</p>
+        <p>Phone: +91 90632 52519</p>
+        <p>Location: Narasaraopet, India</p>
+      </div>
+      <div class="footer-social">
+        <h4>Follow Us</h4>
+        <a href="#">Facebook</a> |
+        <a href="#">Instagram</a> |
+        <a href="#">Twitter</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Tindi Bandi. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/js/app.js"></script>
+  <script src="/js/index.js"></script>
+</body>
+</html>

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Menu Panel | Tindi Bandi</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body { max-width: 1000px; margin: 2rem auto; background: #fff8f0; padding: 20px; font-family: Arial, sans-serif; }
+    .login-container { max-width: 400px; margin: 100px auto; padding: 30px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .admin-container { display: none; }
+    h1, h2, h3 { color: #ff7b00; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+    .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; }
+    .form-row { display: flex; gap: 15px; }
+    .form-row .form-group { flex: 1; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; background: white; border-radius: 8px; overflow: hidden; }
+    th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+    th { background: #ff7b00; color: white; }
+    .action-btn { background: #ff7b00; color: #fff; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; margin: 2px; }
+    .action-btn:hover { background: #e66a00; }
+    .delete-btn { background: #e53935; }
+    .delete-btn:hover { background: #c62828; }
+    .success { color: #2e7d32; margin: 10px 0; }
+    .error { color: #d32f2f; margin: 10px 0; }
+    .checkbox-group { display: flex; gap: 15px; align-items: center; }
+    .checkbox-group label { display: flex; align-items: center; gap: 5px; margin: 0; }
+    .logout-btn { float: right; background: #e53935; }
+    .stats { display: flex; gap: 20px; margin-bottom: 30px; }
+    .stat-card { background: white; padding: 20px; border-radius: 8px; flex: 1; text-align: center; }
+    .preview-img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <!-- Login Form -->
+  <div class="login-container" id="loginContainer">
+    <h1>🍴 Tindi Bandi Admin</h1>
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="adminPassword">Admin Password:</label>
+        <input type="password" id="adminPassword" placeholder="Enter admin password" required>
+      </div>
+      <button type="submit" class="action-btn" style="width: 100%;">Login</button>
+      <div id="loginError" class="error" style="display: none;"></div>
+    </form>
+  </div>
+
+  <!-- Admin Panel -->
+  <div class="admin-container" id="adminContainer">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+      <h1>🍴 Admin Menu Panel</h1>
+      <button class="action-btn logout-btn" id="logoutBtn">Logout</button>
+    </div>
+    
+    <div class="stats" id="statsContainer">
+      <div class="stat-card">
+        <h3 id="totalItems">0</h3>
+        <p>Total Items</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="totalCategories">0</h3>
+        <p>Categories</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="popularItems">0</h3>
+        <p>Popular Items</p>
+      </div>
+    </div>
+    <h2>Add/Edit Menu Item</h2>
+    <form id="menuForm">
+      <input type="hidden" id="menuId" />
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="name">Dish Name *</label>
+          <input type="text" id="name" placeholder="Enter dish name" required>
+        </div>
+        <div class="form-group">
+          <label for="category">Category *</label>
+          <select id="category" required>
+            <option value="">Select Category</option>
+            <option value="Starters">Starters</option>
+            <option value="Main Course">Main Course</option>
+            <option value="Desserts">Desserts</option>
+            <option value="Beverages">Beverages</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="price">Price (₹) *</label>
+          <input type="number" id="price" placeholder="Enter price" min="1" required>
+        </div>
+        <div class="form-group">
+          <label for="img">Image Path *</label>
+          <input type="text" id="img" placeholder="assets/images/example.png" required>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label>Food Type:</label>
+        <div class="checkbox-group">
+          <label><input type="radio" name="foodType" id="veg" value="veg"> Vegetarian</label>
+          <label><input type="radio" name="foodType" id="nonveg" value="nonveg"> Non-Vegetarian</label>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label>Additional Options:</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" id="spicy"> Spicy</label>
+          <label><input type="checkbox" id="popular"> Popular</label>
+        </div>
+      </div>
+      
+      <div style="margin-top: 20px;">
+        <button type="submit" class="action-btn">Save Item</button>
+        <button type="button" id="resetBtn" class="action-btn" style="background: #666;">Clear Form</button>
+      </div>
+      
+      <div id="formMessage" class="success" style="display: none;"></div>
+    </form>
+    <h2>Menu Items</h2>
+    <table id="menuTable">
+      <thead>
+        <tr>
+          <th>Image</th>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Price</th>
+          <th>Options</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <script>
+    let adminToken = localStorage.getItem('adminToken');
+    
+    // Check if already logged in
+    if (adminToken) {
+      showAdminPanel();
+    }
+    
+    // Login form handler
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const password = document.getElementById('adminPassword').value;
+      const errorDiv = document.getElementById('loginError');
+      
+      try {
+        const response = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          adminToken = data.token;
+          localStorage.setItem('adminToken', adminToken);
+          showAdminPanel();
+          errorDiv.style.display = 'none';
+        } else {
+          errorDiv.textContent = data.error || 'Login failed';
+          errorDiv.style.display = 'block';
+        }
+      } catch (error) {
+        errorDiv.textContent = 'Network error. Please try again.';
+        errorDiv.style.display = 'block';
+      }
+    });
+    
+    // Logout handler
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+      localStorage.removeItem('adminToken');
+      adminToken = null;
+      document.getElementById('loginContainer').style.display = 'block';
+      document.getElementById('adminContainer').style.display = 'none';
+      document.getElementById('adminPassword').value = '';
+    });
+    
+    function showAdminPanel() {
+      document.getElementById('loginContainer').style.display = 'none';
+      document.getElementById('adminContainer').style.display = 'block';
+      loadMenu();
+      updateStats();
+    }
+    
+    function showMessage(message, isError = false) {
+      const messageDiv = document.getElementById('formMessage');
+      messageDiv.textContent = message;
+      messageDiv.className = isError ? 'error' : 'success';
+      messageDiv.style.display = 'block';
+      setTimeout(() => {
+        messageDiv.style.display = 'none';
+      }, 3000);
+    }
+    
+    // Helper to reset form
+    function resetForm() {
+      document.getElementById('menuForm').reset();
+      document.getElementById('menuId').value = '';
+      document.getElementById('formMessage').style.display = 'none';
+    }
+    
+    // Fetch and render all menu items
+    async function loadMenu() {
+      try {
+        console.log('Loading menu with token:', adminToken ? 'present' : 'missing');
+        const response = await fetch('/api/admin/menu', {
+          headers: { 'Authorization': 'Bearer ' + adminToken }
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+          throw new Error(errorData.error || `HTTP ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Menu data loaded:', data);
+        const tbody = document.querySelector('#menuTable tbody');
+        
+        tbody.innerHTML = data.map(item => {
+          const options = [];
+          if (item.veg === true) options.push('🌿 Veg');
+          if (item.veg === false) options.push('🥩 Non-Veg');
+          if (item.spicy) options.push('🌶️ Spicy');
+          if (item.popular) options.push('⭐ Popular');
+          
+          // Fix image path - ensure it starts with /
+          const imgPath = item.img.startsWith('/') ? item.img : `/${item.img}`;
+          
+          return `
+            <tr>
+              <td><img src="${imgPath}" class="preview-img" alt="${item.name}" onerror="this.src='/assets/images/download.jpg'"></td>
+              <td>${item.name}</td>
+              <td>${item.category}</td>
+              <td>₹${item.price}</td>
+              <td>${options.join(' ')}</td>
+              <td>
+                <button onclick='editMenu(${JSON.stringify(item).replace(/'/g, "&apos;")})' class="action-btn">Edit</button>
+                <button onclick='deleteMenu("${item._id}")' class="action-btn delete-btn">Delete</button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+        
+      } catch (error) {
+        console.error('Error loading menu:', error);
+        showMessage('Failed to load menu items', true);
+      }
+    }
+    
+    // Update statistics
+    async function updateStats() {
+      try {
+        const response = await fetch('/api/admin/menu', {
+          headers: { 'Authorization': 'Bearer ' + adminToken }
+        });
+        const data = await response.json();
+        
+        const categories = [...new Set(data.map(item => item.category))];
+        const popularItems = data.filter(item => item.popular);
+        
+        document.getElementById('totalItems').textContent = data.length;
+        document.getElementById('totalCategories').textContent = categories.length;
+        document.getElementById('popularItems').textContent = popularItems.length;
+      } catch (error) {
+        console.error('Error updating stats:', error);
+      }
+    }
+    
+    // Edit an item
+    function editMenu(item) {
+      document.getElementById('menuId').value = item._id;
+      document.getElementById('name').value = item.name;
+      document.getElementById('category').value = item.category;
+      document.getElementById('price').value = item.price;
+      document.getElementById('img').value = item.img;
+      
+      // Handle food type (veg/non-veg)
+      if (item.veg === true) {
+        document.getElementById('veg').checked = true;
+      } else if (item.veg === false) {
+        document.getElementById('nonveg').checked = true;
+      }
+      
+      document.getElementById('spicy').checked = item.spicy || false;
+      document.getElementById('popular').checked = item.popular || false;
+      
+      // Scroll to form
+      document.getElementById('menuForm').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Delete an item
+    async function deleteMenu(id) {
+      if (!confirm('Are you sure you want to delete this item?')) return;
+      
+      try {
+        const response = await fetch('/api/admin/menu/' + id, {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + adminToken }
+        });
+        
+        if (response.ok) {
+          showMessage('Item deleted successfully!');
+          loadMenu();
+          updateStats();
+        } else {
+          showMessage('Failed to delete item', true);
+        }
+      } catch (error) {
+        console.error('Error deleting item:', error);
+        showMessage('Network error while deleting item', true);
+      }
+    }
+    
+    // Form submit handler
+    document.getElementById('menuForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      // Handle food type
+      let vegValue = null;
+      if (document.getElementById('veg').checked) {
+        vegValue = true;
+      } else if (document.getElementById('nonveg').checked) {
+        vegValue = false;
+      }
+      
+      const formData = {
+        name: document.getElementById('name').value,
+        category: document.getElementById('category').value,
+        price: parseFloat(document.getElementById('price').value),
+        img: document.getElementById('img').value,
+        veg: vegValue,
+        spicy: document.getElementById('spicy').checked,
+        popular: document.getElementById('popular').checked
+      };
+      
+      const menuId = document.getElementById('menuId').value;
+      const isEditing = !!menuId;
+      
+      try {
+        const response = await fetch(
+          '/api/admin/menu' + (isEditing ? '/' + menuId : ''),
+          {
+            method: isEditing ? 'PUT' : 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + adminToken
+            },
+            body: JSON.stringify(formData)
+          }
+        );
+        
+        if (response.ok) {
+          showMessage(isEditing ? 'Item updated successfully!' : 'Item added successfully!');
+          resetForm();
+          await loadMenu();
+          await updateStats();
+        } else {
+          const error = await response.json();
+          console.error('Save error:', error);
+          showMessage(error.error || error.details || 'Failed to save item', true);
+        }
+      } catch (error) {
+        console.error('Error saving item:', error);
+        showMessage('Network error while saving item', true);
+      }
+    });
+    
+    // Reset button handler
+    document.getElementById('resetBtn').addEventListener('click', resetForm);
+  </script>
+</body>
+</html>
