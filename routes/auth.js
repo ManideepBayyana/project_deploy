@@ -5,7 +5,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
-const SECRET_KEY = 'MY_SUPER_SECRET';
+const SECRET_KEY = process.env.JWT_SECRET || 'MY_SUPER_SECRET';
 
 const User = require('../models/User'); // <-- Make sure this model exists
 
@@ -82,7 +82,22 @@ router.post('/register', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error('=== REGISTRATION ERROR DETAILS ===');
+    console.error('Error name:', error.name);
+    console.error('Error message:', error.message);
+    console.error('Error code:', error.code);
+    console.error('Error stack:', error.stack);
+    
+    if (error.errors) {
+      console.error('Validation errors:', error.errors);
+    }
+    
+    if (error.keyPattern) {
+      console.error('Duplicate key pattern:', error.keyPattern);
+    }
+    
+    console.error('Request body received:', req.body);
+    console.error('================================');
     
     // Handle mongoose validation errors
     if (error.name === 'ValidationError') {
