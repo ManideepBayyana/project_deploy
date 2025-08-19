@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-const SECRET_KEY = 'MY_SUPER_SECRET';
+// Use environment variable for JWT secret
+const SECRET_KEY = process.env.JWT_SECRET || 'MY_SUPER_SECRET';
 
 const authenticateToken = async (req, res, next) => {
   try {
@@ -9,27 +10,46 @@ const authenticateToken = async (req, res, next) => {
     const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
     if (!token) {
+      console.log('No token provided in request');
       return res.status(401).json({ error: 'Access token required' });
     }
 
+    // Verify JWT token
     const decoded = jwt.verify(token, SECRET_KEY);
+    console.log('Token decoded successfully for user:', decoded.username);
     
-    // Get user details and add to request
-    const user = await User.findById(decoded.userId);
+    // Get user details from database
+    const user = await User.findById(decoded.userId).select('-passwordHash');
     if (!user) {
+      console.log('User not found for ID:', decoded.userId);
       return res.status(401).json({ error: 'User not found' });
     }
 
+    // Add user info to request object
     req.user = {
       id: user._id,
       username: user.username,
-      email: user.email
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName
     };
 
+    console.log('Authentication successful for user:', user.username);
     next();
   } catch (error) {
-    console.error('Auth middleware error:', error);
-    return res.status(403).json({ error: 'Invalid or expired token' });
+    console.error('Authentication middleware error:', {
+      name: error.name,
+      message: error.message,
+      stack: error.stack
+    });
+    
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(403).json({ error: 'Invalid token' });
+    } else if (error.name === 'TokenExpiredError') {
+      return res.status(403).json({ error: 'Token expired' });
+    } else {
+      return res.status(500).json({ error: 'Authentication server error' });
+    }
   }
 };
 

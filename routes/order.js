@@ -9,19 +9,67 @@ const { authenticateToken } = require('../middleware/auth');
 // Receives a cart, creates a new order in MongoDB, returns order info
 router.post('/checkout', authenticateToken, async (req, res) => {
   try {
-    const { cart } = req.body;
+    const { cart, customerNotes, deliveryAddress } = req.body;
+    
+    // Validate cart
     if (!cart || !Array.isArray(cart) || cart.length === 0) {
-      return res.status(400).json({ error: "Cart is empty or invalid." });
+      return res.status(400).json({ 
+        success: false,
+        error: "Cart is empty or invalid" 
+      });
     }
 
-    const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-    const tax = Math.round(subtotal * 0.08 * 100) / 100;
-    const total = subtotal + tax;
+    // Validate cart items structure
+    for (const item of cart) {
+      if (!item.id || !item.name || !item.price || !item.qty) {
+        return res.status(400).json({ 
+          success: false,
+          error: "Invalid cart item structure. Missing required fields: id, name, price, qty" 
+        });
+      }
+      
+      if (item.qty < 1 || item.qty > 20) {
+        return res.status(400).json({ 
+          success: false,
+          error: `Invalid quantity for ${item.name}. Must be between 1 and 20` 
+        });
+      }
+      
+      if (item.price < 0) {
+        return res.status(400).json({ 
+          success: false,
+          error: `Invalid price for ${item.name}` 
+        });
+      }
+    }
 
-    // Generate a more unique orderId
-    const orderId = Date.now() + Math.floor(Math.random() * 1000);
+    // Calculate totals
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const taxRate = 0.08; // 8% tax
+    const tax = Math.round(subtotal * taxRate * 100) / 100;
+    const total = Math.round((subtotal + tax) * 100) / 100;
 
-    const order = new Order({
+    // Generate unique orderId with better collision avoidance
+    let orderId;
+    let attempts = 0;
+    const maxAttempts = 5;
+    
+    do {
+      orderId = Date.now() + Math.floor(Math.random() * 10000);
+      const existingOrder = await Order.findOne({ orderId });
+      if (!existingOrder) break;
+      attempts++;
+    } while (attempts < maxAttempts);
+    
+    if (attempts >= maxAttempts) {
+      return res.status(500).json({ 
+        success: false,
+        error: "Failed to generate unique order ID. Please try again." 
+      });
+    }
+
+    // Create order object
+    const orderData = {
       orderId,
       userId: req.user.id,
       username: req.user.username,
@@ -29,39 +77,102 @@ router.post('/checkout', authenticateToken, async (req, res) => {
       subtotal,
       tax,
       total,
-      status: 'Preparing',
-      createdAt: new Date()
-    });
-    await order.save();
+      status: 'Preparing'
+    };
+    
+    if (customerNotes) {
+      orderData.customerNotes = customerNotes.trim();
+    }
+    
+    if (deliveryAddress) {
+      orderData.deliveryAddress = deliveryAddress;
+    }
 
-    res.json({ orderId, subtotal, tax, total });
+    const order = new Order(orderData);
+    const savedOrder = await order.save();
+    
+    console.log(`Order ${orderId} created successfully for user ${req.user.username}`);
+
+    res.status(201).json({ 
+      success: true,
+      message: 'Order placed successfully',
+      data: {
+        orderId,
+        subtotal,
+        tax,
+        total,
+        status: 'Preparing',
+        itemCount: cart.reduce((sum, item) => sum + item.qty, 0),
+        estimatedDeliveryTime: '30-45 minutes'
+      }
+    });
   } catch (error) {
-    console.error('Checkout error:', error);
-    res.status(500).json({ error: 'Internal server error during checkout' });
+    console.error('Checkout error:', {
+      name: error.name,
+      message: error.message,
+      user: req.user?.username,
+      stack: error.stack
+    });
+    
+    if (error.name === 'ValidationError') {
+      const validationErrors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({
+        success: false,
+        error: 'Order validation failed',
+        details: validationErrors
+      });
+    }
+    
+    res.status(500).json({ 
+      success: false,
+      error: 'Internal server error during checkout',
+      message: process.env.NODE_ENV === 'development' ? error.message : 'Please try again later'
+    });
   }
 });
 
 // --- [2] GET /api/order/:orderId/status ---
-// Get and cycle order status
+// Get current order status (no cycling, just return current status)
 router.get('/:orderId/status', authenticateToken, async (req, res) => {
   try {
+    const orderId = parseInt(req.params.orderId);
+    
+    if (isNaN(orderId)) {
+      return res.status(400).json({ 
+        success: false,
+        error: "Invalid order ID" 
+      });
+    }
+    
     const order = await Order.findOne({ 
-      orderId: req.params.orderId,
+      orderId,
       userId: req.user.id // Only allow users to access their own orders
+    }).select('orderId status createdAt total itemCount');
+    
+    if (!order) {
+      return res.status(404).json({ 
+        success: false,
+        error: "Order not found or access denied" 
+      });
+    }
+
+    res.json({ 
+      success: true,
+      data: {
+        orderId: order.orderId,
+        status: order.status,
+        createdAt: order.createdAt,
+        total: order.total,
+        itemCount: order.itemCount
+      }
     });
-    if (!order) return res.status(404).json({ error: "Order not found" });
-
-    // Simulate status cycling (for demo/testing)
-    const statusArr = ['Preparing', 'On the Way', 'Delivered'];
-    let idx = statusArr.indexOf(order.status);
-    idx = (idx + 1) % statusArr.length;
-    order.status = statusArr[idx];
-    await order.save();
-
-    res.json({ status: order.status });
   } catch (error) {
     console.error('Status check error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to fetch order status',
+      message: process.env.NODE_ENV === 'development' ? error.message : 'Please try again later'
+    });
   }
 });
 
@@ -69,30 +180,113 @@ router.get('/:orderId/status', authenticateToken, async (req, res) => {
 // Rate your order (stores emoji on order doc)
 router.post('/:orderId/rate', authenticateToken, async (req, res) => {
   try {
+    const orderId = parseInt(req.params.orderId);
+    const { rating } = req.body;
+    
+    if (isNaN(orderId)) {
+      return res.status(400).json({ 
+        success: false,
+        error: "Invalid order ID" 
+      });
+    }
+    
+    if (!rating || rating.trim() === '') {
+      return res.status(400).json({ 
+        success: false,
+        error: "Rating is required" 
+      });
+    }
+    
     const order = await Order.findOne({ 
-      orderId: req.params.orderId,
+      orderId,
       userId: req.user.id // Only allow users to rate their own orders
     });
-    if (!order) return res.status(404).json({ error: "Order not found" });
     
-    order.rating = req.body.emoji || '';
+    if (!order) {
+      return res.status(404).json({ 
+        success: false,
+        error: "Order not found or access denied" 
+      });
+    }
+    
+    // Only allow rating if order is delivered
+    if (order.status !== 'Delivered') {
+      return res.status(400).json({ 
+        success: false,
+        error: "You can only rate delivered orders" 
+      });
+    }
+    
+    order.rating = rating.trim();
     await order.save();
-    res.json({ message: 'Thanks for your rating!' });
+    
+    console.log(`User ${req.user.username} rated order ${orderId}: ${rating}`);
+    
+    res.json({ 
+      success: true,
+      message: 'Thanks for your rating!',
+      data: {
+        orderId,
+        rating: order.rating
+      }
+    });
   } catch (error) {
     console.error('Rating error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to submit rating',
+      message: process.env.NODE_ENV === 'development' ? error.message : 'Please try again later'
+    });
   }
 });
 
 // --- [4] GET /api/order/user-orders ---
-// Get user's orders only
+// Get user's orders with pagination and filtering
 router.get('/user-orders', authenticateToken, async (req, res) => {
   try {
-    const orders = await Order.find({ userId: req.user.id }).sort({ createdAt: -1 });
-    res.json(orders);
+    const { status, limit = 20, page = 1, sortBy = 'createdAt', order = 'desc' } = req.query;
+    
+    let query = { userId: req.user.id };
+    
+    // Filter by status if provided
+    if (status) {
+      query.status = status;
+    }
+    
+    const sortOrder = order === 'desc' ? -1 : 1;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    
+    const [orders, totalOrders] = await Promise.all([
+      Order.find(query)
+        .sort({ [sortBy]: sortOrder })
+        .limit(parseInt(limit))
+        .skip(skip)
+        .select('-__v'),
+      Order.countDocuments(query)
+    ]);
+    
+    const totalPages = Math.ceil(totalOrders / parseInt(limit));
+    
+    console.log(`User ${req.user.username} fetched ${orders.length} orders (page ${page}/${totalPages})`);
+    
+    res.json({
+      success: true,
+      data: orders,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages,
+        totalOrders,
+        hasNextPage: parseInt(page) < totalPages,
+        hasPrevPage: parseInt(page) > 1
+      }
+    });
   } catch (error) {
     console.error('User orders fetch error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to fetch orders',
+      message: process.env.NODE_ENV === 'development' ? error.message : 'Please try again later'
+    });
   }
 });
 
