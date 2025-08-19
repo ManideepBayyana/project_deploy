@@ -17,8 +17,19 @@ const io = socketIo(server);
 const PORT = process.env.PORT || 3001;
 
 // --- MongoDB connection ---
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/tindibandi', { })
-  .then(() => console.log('MongoDB connected'))
+// For production, use MongoDB Atlas or other cloud MongoDB services
+// For local development, fallback to localhost
+const MONGODB_URI = process.env.MONGODB_URI || 
+  (process.env.NODE_ENV === 'production' ? 
+    'mongodb://mongo:27017/tindibandi' : // Docker service name for containerized deployment
+    'mongodb://localhost:27017/tindibandi' // Local development
+  );
+
+mongoose.connect(MONGODB_URI, { })
+  .then(() => {
+    console.log('MongoDB connected successfully');
+    console.log(`MongoDB URI: ${MONGODB_URI.replace(/\/\/.*@/, '//***:***@')}`); // Hide credentials in logs
+  })
   .catch(err => console.error('MongoDB connection error:', err));
 
 // --- Middleware ---
@@ -60,6 +71,11 @@ io.on('connection', (socket) => {
 app.set('socketio', io);
 
 // --- Start server ---
-server.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+const HOST = process.env.HOST || '0.0.0.0';
+server.listen(PORT, HOST, () => {
+  console.log(`Server running on ${HOST}:${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`Local access: http://localhost:${PORT}`);
+  }
 });

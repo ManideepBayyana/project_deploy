@@ -3,7 +3,11 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/tindibandi')
+mongoose.connect(process.env.MONGODB_URI || 
+  (process.env.NODE_ENV === 'production' ? 
+    'mongodb://mongo:27017/tindibandi' : 
+    'mongodb://localhost:27017/tindibandi'
+  ))
   .then(() => {
     console.log('MongoDB connected for testing');
     testRegistration();

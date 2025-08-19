@@ -109,7 +109,7 @@ document.addEventListener("DOMContentLoaded", function() {
       return;
     }
     
-    fetch('http://localhost:3001/api/order/checkout', {
+    fetch('/api/order/checkout', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

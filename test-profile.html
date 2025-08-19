@@ -37,7 +37,8 @@
                 initials: localStorage.getItem('userInitials')
             });
             
-            alert('Test user setup complete! Go to the main page (http://localhost:3001) to see profile.');
+            const baseUrl = window.location.origin;
+            alert(`Test user setup complete! Go to the main page (${baseUrl}) to see profile.`);
         }
         
         function clearUser() {

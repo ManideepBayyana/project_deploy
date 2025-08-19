@@ -15,7 +15,9 @@ console.log('Testing HTTP registration endpoint...');
 console.log('Test data:', testData);
 
 // Make HTTP request to the registration endpoint
-fetch('http://localhost:3001/api/auth/register', {
+// Use environment variable for API base URL or fallback to localhost for testing
+const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:3001';
+fetch(`${API_BASE_URL}/api/auth/register`, {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -37,5 +39,5 @@ fetch('http://localhost:3001/api/auth/register', {
 })
 .catch(error => {
   console.error('❌ Network error:', error.message);
-  console.error('Make sure the server is running on http://localhost:3001');
+  console.error(`Make sure the server is running on ${API_BASE_URL}`);
 });

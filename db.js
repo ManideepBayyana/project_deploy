@@ -3,7 +3,13 @@ require('dotenv').config();
 const mongoose = require("mongoose");
 
 // Use environment variable for MongoDB connection string
-const mongoURI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/tindibandi";
+// For production, use MongoDB Atlas or other cloud MongoDB services
+// For local development, fallback to localhost
+const mongoURI = process.env.MONGODB_URI || 
+  (process.env.NODE_ENV === 'production' ? 
+    'mongodb://mongo:27017/tindibandi' : // Docker service name
+    'mongodb://localhost:27017/tindibandi'
+  );
 
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
