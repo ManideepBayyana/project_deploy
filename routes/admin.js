@@ -5,8 +5,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const MenuItem = require('../models/MenuItem');
 
-const ADMIN_SECRET = 'admin123'; // Change this in production
-const JWT_SECRET = 'your_jwt_secret_key'; // Change this in production
+const ADMIN_SECRET = process.env.ADMIN_PASSWORD || 'admin123';
+const JWT_SECRET = process.env.JWT_SECRET || 'your-fallback-jwt-secret';
 
 // Admin login route (public)
 router.post('/login', async (req, res) => {

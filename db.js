@@ -1,8 +1,9 @@
 // db.js
+require('dotenv').config();
 const mongoose = require("mongoose");
 
-// Replace with your connection string
-const mongoURI = "mongodb://127.0.0.1:27017/tindibandi"; // or use your Atlas string
+// Use environment variable for MongoDB connection string
+const mongoURI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/tindibandi";
 
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,

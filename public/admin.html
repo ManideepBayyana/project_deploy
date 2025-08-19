@@ -137,12 +137,13 @@
     </table>
   </div>
   <script>
-    let adminToken = localStorage.getItem('adminToken');
+    // Clear any existing admin tokens on page load for security
+    localStorage.removeItem('adminToken');
+    let adminToken = null;
     
-    // Check if already logged in
-    if (adminToken) {
-      showAdminPanel();
-    }
+    // Always show login form first
+    document.getElementById('loginContainer').style.display = 'block';
+    document.getElementById('adminContainer').style.display = 'none';
     
     // Login form handler
     document.getElementById('loginForm').addEventListener('submit', async function(e) {

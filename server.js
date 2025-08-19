@@ -1,5 +1,8 @@
 // server.js - Main server file: Express, Socket.io, MongoDB, and all API routes
 
+// Load environment variables
+require('dotenv').config();
+
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
@@ -11,12 +14,12 @@ const app = express();
 const server = http.createServer(app);    // For socket.io
 const io = socketIo(server);
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 // --- MongoDB connection ---
-mongoose.connect('mongodb://localhost:27017/tindibandi', { })
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/tindibandi', { })
   .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error(err));
+  .catch(err => console.error('MongoDB connection error:', err));
 
 // --- Middleware ---
 app.use(express.json());
