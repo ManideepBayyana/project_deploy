@@ -213,7 +213,19 @@
     try {
       // Fetch current menu for dynamic responses
       const response = await fetch('/api/menu');
-      const menu = await response.json();
+      const menuResponse = await response.json();
+      
+      // Handle both old and new API response formats
+      let menu;
+      if (menuResponse.success && menuResponse.data) {
+        // New API format
+        menu = menuResponse.data;
+      } else if (Array.isArray(menuResponse)) {
+        // Old API format (fallback)
+        menu = menuResponse;
+      } else {
+        throw new Error('Invalid menu response format');
+      }
       
       if (text.toLowerCase().includes("popular")) {
         const popular = menu.filter(item => item.popular).map(item => item.name);

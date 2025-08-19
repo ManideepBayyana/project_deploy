@@ -102,7 +102,6 @@ const orderSchema = new mongoose.Schema({
 
 // Create indexes for better query performance
 orderSchema.index({ userId: 1, createdAt: -1 });
-orderSchema.index({ orderId: 1 }, { unique: true });
 orderSchema.index({ status: 1, createdAt: -1 });
 orderSchema.index({ username: 1, createdAt: -1 });
 

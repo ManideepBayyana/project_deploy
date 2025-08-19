@@ -116,11 +116,25 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       return res.json();
     })
-    .then(menu => {
-      console.log('Menu loaded:', menu);
-      renderMenu(menu);
+    .then(response => {
+      console.log('Menu API response:', response);
+      
+      // Handle both old and new API response formats
+      let menuItems;
+      if (response.success && response.data) {
+        // New API format
+        menuItems = response.data;
+      } else if (Array.isArray(response)) {
+        // Old API format (fallback)
+        menuItems = response;
+      } else {
+        throw new Error('Invalid menu response format');
+      }
+      
+      console.log('Menu items:', menuItems);
+      renderMenu(menuItems);
       updateCartBadge();
-      if (setMenuData) setMenuData(menu);
+      if (setMenuData) setMenuData(menuItems);
     })
     .catch(error => {
       console.error('Error loading menu:', error);
