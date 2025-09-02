@@ -140,10 +140,47 @@
         newLogoutBtn.addEventListener('click', function(e) {
           console.log('Logout clicked');
           e.preventDefault();
-          localStorage.removeItem("tindi_jwt");
-          localStorage.removeItem("userInitials");
-          localStorage.removeItem("user");
-          window.location.reload();
+          
+          // Call server-side logout (optional, for logging purposes)
+          const token = localStorage.getItem("tindi_jwt");
+          if (token) {
+            fetch('/api/auth/logout', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              }
+            }).catch(error => {
+              console.log('Server-side logout error (non-critical):', error);
+            });
+          }
+          
+          // Clear ALL localStorage items related to the application
+          const keysToRemove = [
+            "tindi_jwt",
+            "token", 
+            "userInitials",
+            "user",
+            "cart",
+            "lastOrder", 
+            "lastOrderId",
+            "orderHistory", 
+            "cachedOrders",
+            "userOrders"
+          ];
+          
+          keysToRemove.forEach(key => {
+            localStorage.removeItem(key);
+          });
+          
+          // Clear any session storage as well
+          sessionStorage.clear();
+          
+          // Clear browser cache for API calls by adding a timestamp
+          const timestamp = Date.now();
+          
+          // Redirect to login page instead of reloading
+          window.location.href = '/login.html?logout=' + timestamp;
         });
       }
       

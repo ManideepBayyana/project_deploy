@@ -186,7 +186,7 @@
 </head>
 <body>
   <header>
-    <div class="logo">🍴 Tindi Bandi</div>
+    <a href="/index.html" class="logo">🍴 Tindi Bandi</a>
     <nav>
       <a href="/index.html">Menu</a>
       <a href="/orders.html">Orders</a>
@@ -235,6 +235,21 @@
           <div class="info-item">
             <span class="info-label">Member Since:</span>
             <span class="info-value" id="viewMemberSince">-</span>
+          </div>
+        </div>
+        
+        <!-- Recent Orders Section -->
+        <div class="profile-info" style="margin-top: 2rem;">
+          <h3 style="margin-bottom: 1rem; color: #ff5722; font-size: 1.2rem;">📋 Recent Orders</h3>
+          <div id="recentOrders" style="min-height: 60px;">
+            <div style="text-align: center; color: #666; padding: 20px;">
+              <p>Loading recent orders...</p>
+            </div>
+          </div>
+          <div style="text-align: center; margin-top: 1rem;">
+            <a href="/orders.html" style="color: #ff5722; text-decoration: none; font-weight: bold;">
+              📜 View All Orders →
+            </a>
           </div>
         </div>
         
@@ -602,8 +617,62 @@
       });
     });
 
-    // Load profile on page load
-    loadProfile();
+    // Load recent orders
+    async function loadRecentOrders() {
+      try {
+        const response = await fetch('/api/order/user-orders?limit=3', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (response.status === 401) {
+          localStorage.removeItem('token');
+          window.location.href = '/login.html';
+          return;
+        }
+
+        const data = await response.json();
+        const recentOrdersContainer = document.getElementById('recentOrders');
+        
+        if (data.success && data.data && data.data.length > 0) {
+          const orders = data.data;
+          recentOrdersContainer.innerHTML = orders.map(order => `
+            <div style="border: 1px solid #eee; border-radius: 5px; padding: 10px; margin-bottom: 10px; background: white;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                <span style="font-weight: bold; color: #ff5722;">Order #${order.orderId}</span>
+                <span style="font-size: 0.9em; color: #666;">${new Date(order.createdAt).toLocaleDateString()}</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: #333;">${order.cart.length} item(s) - ₹${order.total.toFixed(2)}</span>
+                <span style="padding: 3px 8px; border-radius: 12px; font-size: 0.8em; background: ${order.status === 'Delivered' ? '#e8f5e8' : order.status === 'Preparing' ? '#fff3e0' : '#e3f2fd'}; color: ${order.status === 'Delivered' ? '#2e7d32' : order.status === 'Preparing' ? '#f57c00' : '#1976d2'};">$
+                  ${order.status}
+                </span>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          recentOrdersContainer.innerHTML = `
+            <div style="text-align: center; color: #666; padding: 20px;">
+              <p>📦 No orders yet</p>
+              <p style="font-size: 0.9em; margin-top: 5px;">Start ordering to see your order history here!</p>
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('Error loading recent orders:', error);
+        const recentOrdersContainer = document.getElementById('recentOrders');
+        recentOrdersContainer.innerHTML = `
+          <div style="text-align: center; color: #d32f2f; padding: 20px;">
+            <p>❌ Failed to load recent orders</p>
+            <p style="font-size: 0.9em; margin-top: 5px;">Please try refreshing the page</p>
+          </div>
+        `;
+      }
+    }
+
+    // Load profile and recent orders on page load
+    Promise.all([loadProfile(), loadRecentOrders()]);
   </script>
 </body>
 </html>

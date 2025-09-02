@@ -309,4 +309,24 @@ router.put('/profile', async (req, res) => {
   }
 });
 
+// -------- Logout (POST /api/auth/logout) --------
+router.post('/logout', async (req, res) => {
+  try {
+    // Since we're using JWT (stateless), we don't need to invalidate server-side
+    // The client will remove the token from localStorage
+    // In a production app with a token blacklist, you'd add the token to a blacklist here
+    
+    res.json({ 
+      success: true,
+      message: 'Logged out successfully' 
+    });
+  } catch (error) {
+    console.error('Logout error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Internal server error during logout' 
+    });
+  }
+});
+
 module.exports = router;

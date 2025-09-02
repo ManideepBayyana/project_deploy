@@ -11,7 +11,10 @@ const authenticateToken = async (req, res, next) => {
 
     if (!token) {
       console.log('No token provided in request');
-      return res.status(401).json({ error: 'Access token required' });
+      return res.status(401).json({ 
+        error: 'Access token required',
+        code: 'NO_TOKEN'
+      });
     }
 
     // Verify JWT token
@@ -22,7 +25,10 @@ const authenticateToken = async (req, res, next) => {
     const user = await User.findById(decoded.userId).select('-passwordHash');
     if (!user) {
       console.log('User not found for ID:', decoded.userId);
-      return res.status(401).json({ error: 'User not found' });
+      return res.status(401).json({ 
+        error: 'User not found', 
+        code: 'USER_NOT_FOUND'
+      });
     }
 
     // Add user info to request object
@@ -44,11 +50,20 @@ const authenticateToken = async (req, res, next) => {
     });
     
     if (error.name === 'JsonWebTokenError') {
-      return res.status(403).json({ error: 'Invalid token' });
+      return res.status(401).json({ 
+        error: 'Invalid token', 
+        code: 'INVALID_TOKEN'
+      });
     } else if (error.name === 'TokenExpiredError') {
-      return res.status(403).json({ error: 'Token expired' });
+      return res.status(401).json({ 
+        error: 'Token expired', 
+        code: 'TOKEN_EXPIRED'
+      });
     } else {
-      return res.status(500).json({ error: 'Authentication server error' });
+      return res.status(500).json({ 
+        error: 'Authentication server error',
+        code: 'SERVER_ERROR'
+      });
     }
   }
 };

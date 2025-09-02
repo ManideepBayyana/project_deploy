@@ -59,6 +59,22 @@ userSchema.virtual('fullName').get(function() {
   return `${this.firstName} ${this.lastName}`;
 });
 
+// Virtual field to get user orders
+userSchema.virtual('orders', {
+  ref: 'Order',
+  localField: '_id',
+  foreignField: 'userId',
+  options: { sort: { createdAt: -1 } } // Latest orders first
+});
+
+// Virtual field to get order count
+userSchema.virtual('orderCount', {
+  ref: 'Order',
+  localField: '_id',
+  foreignField: 'userId',
+  count: true
+});
+
 // Ensure virtual fields are serialized
 userSchema.set('toJSON', {
   virtuals: true,

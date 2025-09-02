@@ -130,16 +130,20 @@ document.addEventListener("DOMContentLoaded", function() {
     .then(data => {
       if (!data) return;
       
-      // Save order info for checkout page
-      localStorage.setItem('lastOrder', JSON.stringify({
-        orderId: data.orderId,
-        total: data.total
-      }));
-      localStorage.setItem('lastOrderId', data.orderId); // For order tracking
-      
-      alert(`Order placed! Your orderId is ${data.orderId}`);
-      localStorage.removeItem(CART_KEY);
-      window.location.href = "checkout.html";
+      if (data.success && data.data) {
+        // Save order info for checkout page
+        localStorage.setItem('lastOrder', JSON.stringify({
+          orderId: data.data.orderId,
+          total: data.data.total
+        }));
+        localStorage.setItem('lastOrderId', data.data.orderId); // For order tracking
+        
+        alert(`Order placed successfully! Your Order ID is ${data.data.orderId}`);
+        localStorage.removeItem(CART_KEY);
+        window.location.href = "checkout.html";
+      } else {
+        alert(data.error || 'Order failed! Please try again.');
+      }
     })
     .catch(err => {
       console.error('Checkout error:', err);

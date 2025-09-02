@@ -52,10 +52,14 @@ router.post('/checkout', authenticateToken, async (req, res) => {
     // Generate unique orderId with better collision avoidance
     let orderId;
     let attempts = 0;
-    const maxAttempts = 5;
+    const maxAttempts = 10;
     
     do {
-      orderId = Date.now() + Math.floor(Math.random() * 10000);
+      // Create more unique order ID: timestamp + random 6-digit number
+      const timestamp = Date.now();
+      const randomNum = Math.floor(Math.random() * 900000) + 100000; // 6-digit random number
+      orderId = parseInt(`${timestamp}${randomNum}`.slice(-12)); // Take last 12 digits for manageable ID
+      
       const existingOrder = await Order.findOne({ orderId });
       if (!existingOrder) break;
       attempts++;
@@ -302,7 +306,62 @@ router.get('/all', async (req, res) => {
   }
 });
 
-// --- [5] Test log endpoint for connectivity
+// --- [6] PUT /api/order/:orderId/status ---
+// Update order status (for admin or automated systems)
+router.put('/:orderId/status', async (req, res) => {
+  try {
+    const orderId = parseInt(req.params.orderId);
+    const { status } = req.body;
+    
+    if (isNaN(orderId)) {
+      return res.status(400).json({ 
+        success: false,
+        error: "Invalid order ID" 
+      });
+    }
+    
+    const validStatuses = ['Preparing', 'On the Way', 'Delivered', 'Cancelled'];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ 
+        success: false,
+        error: "Invalid status. Must be one of: " + validStatuses.join(', ')
+      });
+    }
+    
+    const order = await Order.findOneAndUpdate(
+      { orderId },
+      { status },
+      { new: true }
+    );
+    
+    if (!order) {
+      return res.status(404).json({ 
+        success: false,
+        error: "Order not found" 
+      });
+    }
+    
+    console.log(`Order ${orderId} status updated to: ${status}`);
+    
+    res.json({ 
+      success: true,
+      message: 'Order status updated successfully',
+      data: {
+        orderId: order.orderId,
+        status: order.status
+      }
+    });
+  } catch (error) {
+    console.error('Status update error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to update order status',
+      message: process.env.NODE_ENV === 'development' ? error.message : 'Please try again later'
+    });
+  }
+});
+
+// --- [7] Test log endpoint for connectivity
 router.get('/testlog', (req, res) => {
   console.log('GET /api/order/testlog was called!');
   res.json({ success: true });

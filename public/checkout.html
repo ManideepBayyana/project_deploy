@@ -8,7 +8,7 @@
 </head>
 <body>
   <header>
-    <div class="logo">🍴 Tindi Bandi</div>
+    <a href="/index.html" class="logo">🍴 Tindi Bandi</a>
     <nav>
       <a href="/index.html" class="back-link">Home</a>
       <a href="/orders.html" class="back-link">Orders</a>
@@ -59,5 +59,87 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/app.js"></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Load order info from localStorage
+    const lastOrder = JSON.parse(localStorage.getItem('lastOrder') || '{}');
+    const orderId = lastOrder.orderId;
+    const total = lastOrder.total;
+    
+    // Display order info
+    const orderIdEl = document.getElementById('order-id');
+    const orderTotalEl = document.getElementById('order-total');
+    
+    if (orderId) {
+      orderIdEl.textContent = orderId;
+    } else {
+      orderIdEl.textContent = 'Loading...';
+    }
+    
+    if (total) {
+      orderTotalEl.textContent = total.toFixed(2);
+    }
+    
+    // Auto-progress order status
+    const steps = document.querySelectorAll('.step');
+    const statusDiv = document.getElementById('order-status');
+    let currentStep = 0;
+    
+    function updateStatus() {
+      // Remove active class from all steps
+      steps.forEach(step => step.classList.remove('active'));
+      
+      // Add active class to current and previous steps
+      for (let i = 0; i <= currentStep; i++) {
+        if (steps[i]) {
+          steps[i].classList.add('active');
+        }
+      }
+      
+      // Update status text
+      const statusTexts = ['Preparing your delicious meal...', 'Driver is on the way!', 'Order delivered! Enjoy your meal!'];
+      if (statusDiv && statusTexts[currentStep]) {
+        statusDiv.textContent = statusTexts[currentStep];
+      }
+      
+      // Move to next step after 2 seconds (except for the last step)
+      if (currentStep < steps.length - 1) {
+        currentStep++;
+        setTimeout(updateStatus, 2000); // 2 seconds delay
+      } else {
+        // Order completed - update status in database
+        updateOrderStatusInDB(orderId, 'Delivered');
+      }
+    }
+    
+    function updateOrderStatusInDB(orderId, status) {
+      if (!orderId) return;
+      
+      fetch(`/api/order/${orderId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          console.log(`Order ${orderId} status updated to: ${status}`);
+        } else {
+          console.error('Failed to update order status:', data.error);
+        }
+      })
+      .catch(error => {
+        console.error('Error updating order status:', error);
+      });
+    }
+    
+    // Start status progression
+    if (orderId) {
+      updateStatus();
+    }
+  });
+  </script>
 </body>
 </html>
