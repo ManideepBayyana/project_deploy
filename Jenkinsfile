@@ -117,7 +117,7 @@ pipeline {
                                 sleep 20
                             done
                             # Show final service status
-                            kubectl get service fitness-tracker-service
+                            kubectl get service tindibandi-service
                             echo "✅ Deployment completed successfully!"
                         """
                     }
