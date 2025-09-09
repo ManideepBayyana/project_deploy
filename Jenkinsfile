@@ -43,7 +43,7 @@ pipeline {
                     script {
                         sh """
                             echo "🔄 Updating kubeconfig..."
-                            aws eks update-kubeconfig --region ap-south-1 --name manideep-cluster
+                            aws eks update-kubeconfig --region ap-south-1 --name manideep-test-cluster
  
                             echo "🚀 Updating deployment image in Kubernetes..."
                             kubectl set image deployment/tindibandi-app \
