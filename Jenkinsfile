@@ -3,8 +3,8 @@ pipeline {
     environment {
         DOCKER_IMAGE = "manideep2003/capsule_project_manideep"
         DOCKER_TAG   = "${BUILD_NUMBER}"
-        EKS_CLUSTER_NAME = "manideep-cluster"
-        AWS_REGION = "ap-south-1"
+        EKS_CLUSTER_NAME = "manideep-final"
+        AWS_REGION = "ap-southeast-1"
     }
     stages {
         stage('Checkout') {
